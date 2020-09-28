@@ -19,34 +19,34 @@ spec:
           ports:
           - containerPort: 80
           env:
-            - name: SQL_DBNAME
-              value: mydrivingDB
-            - name: SQL_SERVER
-              value: sqlservervxd8656.database.windows.net                   
-            - name: SQL_USER
+            - name: "SQL_DBNAME"
+              value: "mydrivingDB"
+            - name: "SQL_SERVER"
+              value: "sqlservervxd8656.database.windows.net"                   
+            - name: "SQL_USER"
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
-                  key: username
-            - name: SQL_PASSWORD
+                  name: "db-secret"
+                  key: "username"
+            - name: "SQL_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
-                  key: password
+                  name: "db-secret"
+                  key: "password"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: "poi"
+    name: poi
     namespace: oh
     labels:
-        app: "poi"
+        app: poi
 spec:
-    type: LoadBalancer
+    type: ClusterIP
     ports:
     - port: 80
       targetPort: 80
       protocol: TCP
       name: http
     selector:
-        app: "poi"
+        app: poi
