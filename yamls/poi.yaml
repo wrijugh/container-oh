@@ -24,15 +24,9 @@ spec:
             - name: "SQL_SERVER"
               value: "sqlservervxd8656.database.windows.net"                   
             - name: "SQL_USER"
-              valueFrom:
-                secretKeyRef:
-                  name: "db-secret"
-                  key: "username"
+              value: ""
             - name: "SQL_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: "db-secret"
-                  key: "password"
+              value: ""
 ---
 apiVersion: v1
 kind: Service
