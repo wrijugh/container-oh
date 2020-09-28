@@ -1,0 +1,52 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "poi" 
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poi
+  template:
+    metadata:
+      labels:
+        app: poi 
+    spec:
+      containers:
+        - name: "poi"
+          image: "registryvxd8656.azurecr.io/tripinsights/poi:1.0"
+          ports:
+          - containerPort: 80
+          env:
+            - name: SQL_DBNAME
+              value: mydrivingDB
+            - name: SQL_SERVER
+              value: sqlservervxd8656.database.windows.net                   
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: "poi"
+    namespace: api
+    labels:
+        app: "poi"
+spec:
+    type: ClusterIP
+    ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "poi"

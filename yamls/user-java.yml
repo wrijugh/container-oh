@@ -1,0 +1,57 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "user-java"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-java
+  template:
+    metadata:
+      labels:
+        app: user-java
+    spec:
+      containers:
+        - name: "user-java"
+          image: "registryvxd8656.azurecr.io/tripinsights/user-java:1.0"
+          ports:
+          - containerPort: 80
+          env:
+            - name: SQL_DBNAME
+              value: mydrivingDB
+            - name: SQL_SERVER
+              value: sqlservervxd8656.database.windows.net                   
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /api/user-java/healthcheck
+              port: 80
+            periodSeconds: 30
+            timeoutSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: "user-java"
+    labels:
+        app: "user-java"
+spec:
+    type: ClusterIP
+    ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "user-java"
+

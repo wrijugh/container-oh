@@ -1,0 +1,51 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "trips"
+  namespace: api  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips 
+    spec:
+      containers:
+        - name: "trips"
+          image: "registryvxd8656.azurecr.io/tripinsights/trips:1.0"  
+          ports:
+          - containerPort: 80
+          env:
+            - name: SQL_DBNAME
+              value: mydrivingDB
+            - name: SQL_SERVER
+              value: sqlservervxd8656.database.windows.net                   
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: "trips"
+    labels:
+        app: "trips"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 8080
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "trips"
